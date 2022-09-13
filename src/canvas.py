@@ -4,9 +4,9 @@ from canvasapi import Canvas
 # pip install canvasapi
 
 # Canvas API URL
-API_URL = "https://csufullerton.instructure.com"
+API_URL = "https://canvas.instructure.com/"
 # Canvas API key
-API_KEY = "349~RVcIDeSG49aKDSmw3Tzo3iEz2kw6Nqt0CMZOe5JyBa7Ax7d1pAZlncTMCFzkFh2X"
+API_KEY = "token"
 
 # Initialize a new Canvas object
 canvas = Canvas(API_URL, API_KEY)
