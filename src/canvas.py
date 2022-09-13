@@ -24,10 +24,7 @@ def list_assignments(course):
     for assignment in course.get_assignments():
         assignments.append(str(assignment))
 
-    if len(assignments) == 0:
-        return None
-    else:
-        return assignments
+    return assignments
 
 
 def list_courses():
@@ -39,22 +36,17 @@ def list_courses():
     for course in user.get_courses():
         courses.append(course.name)
 
-    if len(courses) == 0:
-        return None
-    else:
-        return courses
+    return courses
 
 
 def find_course(query):
-    """Returns first instance of course matching course_name"""
+    """Returns first instance of course matching course_name
+        Returns null if query is not found"""
+
+    course_query = None
 
     for course in user.get_courses():
         if query.lower() in str(course.name).lower():
-            return course
+            course_query = course
 
-
-user_input = input("Input course name: ")
-set_course = find_course(user_input)
-
-assignments = list_assignments(set_course)
-courses = list_courses()
+    return course_query
