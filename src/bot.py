@@ -19,7 +19,7 @@ intents=discord.Intents.default()
 client = discord.Client(intents=intents)
 intents.message_content = True
 
-token = 'MTAyMzE0MTMzNTA1NTczNjg0Mg.GwhJrV.70XYk5LkrM5ULbjwqK9bLKNjoBixf_NV8X0s_U'
+token = os.environ['TOKEN']
 
 api_key = 0
 
