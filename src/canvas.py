@@ -6,7 +6,7 @@ from canvasapi import Canvas
 # Canvas API URL
 API_URL = "https://canvas.instructure.com/"
 # Canvas API key
-API_KEY = "349~NTHNMprd3AAqhwgIY8veN9PrZvH8VZ8TUaouLIpyYBDCHwdQ0VX1ebOaIC8RRYUt"
+API_KEY = "0"
 
 
 def set_api_key(key):
