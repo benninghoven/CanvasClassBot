@@ -38,7 +38,7 @@ async def on_message(message):
 	if message.guild is None:
 		return
 
-	# TODO: Add handling for null API_KEY
+	# TODO: Add handling for null / invalid API_KEY
 
 	# Register (register API key)
 	if user_message.startswith(".register"):
