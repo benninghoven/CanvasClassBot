@@ -5,9 +5,9 @@ A Discord bot meant to integrate with your Canvas class!
 <p style="font-size: smaller">(not actually associated with Canvas)</p>
 
 Go to:
-<a href='features'>Features</a>, 
-<a href='setup_guide'>Setup Guide</a>, 
-<a href='commands'>Commands</a>
+<a href='#features'>Features</a>, 
+<a href='#setup_guide'>Setup Guide</a>, 
+<a href='#commands'>Commands</a>
 
 <h2 id='features'>Features</h2>
 
