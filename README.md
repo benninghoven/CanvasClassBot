@@ -15,8 +15,9 @@ Go to:
 
 <h2 id='commands'>Commands</h2>
 
-`/tbd` This command ...
+`.register (api_key)` This command registers your Canvas API key with the bot. 
+This step is required for the bot to function.
 
-`/tbd` This command ...
+`.courses` This command is intended for use during setup to list all possible Canvas courses for the bot to pair with.
 
-`/tbd` This command ...
+`.search` This command is intended for use during setup to search for a Canvas course for the bot to pair with.
