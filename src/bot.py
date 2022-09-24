@@ -19,13 +19,14 @@ intents=discord.Intents.default()
 client = discord.Client(intents=intents)
 intents.message_content = True
 
-token = os.environ['TOKEN']
+#token = os.environ['TOKEN']
+token = "MTAyMzE0MTMzNTA1NTczNjg0Mg.GrKNos.2yhEVVMW57nREPPur2Tbc5EAMP4aoXtLcv99W4"
 
-api_key = 0
 
 @client.event
 async def on_ready():
 	print("{0.user}".format(client) + " bot is online.")
+
 
 @client.event
 async def on_message(message):
@@ -35,32 +36,36 @@ async def on_message(message):
 
 	if message.author == client.user:
 		return
+	if message.guild is None:
+		return
 
-	# TODO: Enable only when from guild
 	# TODO: Add handling for null API_KEY
 
 	# Register (register API key)
 	if user_message.startswith(".register"):
-		global api_key
 		api_key = user_message.split(".register")[1].strip()
-		set_api_key(api_key)
+
+		set_api_key(message.guild.id, api_key)
 
 		await message.channel.send("API key registered!")
-		print("API Key: " + api_key)
 
 	# Courses (list courses)
 	if user_message.startswith(".courses"):
-		course_list = list_courses()
+		guild_id = message.guild.id
+		api_key = guild_keys[guild_id]
+		course_list = list_courses(api_key)
 
 		await message.channel.send("Course List: ")
-
 		for courses in course_list:
 			await message.channel.send(courses)
 
 	# Search (returns matching course name)
 	if user_message.startswith(".search"):
 		query = user_message.split(".search")[1]
-		await message.channel.send(find_course(query).name)
+		guild_id = message.guild.id
+		api_key = guild_keys[guild_id]
+
+		await message.channel.send(find_course(api_key,query).name)
 
 	# Misc
 	if channel == "general":
