@@ -19,8 +19,7 @@ intents=discord.Intents.default()
 client = discord.Client(intents=intents)
 intents.message_content = True
 
-#token = os.environ['TOKEN']
-token = "MTAyMzE0MTMzNTA1NTczNjg0Mg.GrKNos.2yhEVVMW57nREPPur2Tbc5EAMP4aoXtLcv99W4"
+token = os.environ['TOKEN']
 
 
 @client.event
