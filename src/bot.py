@@ -38,11 +38,14 @@ async def on_message(message):
 	if message.guild is None:
 		return
 
-	# TODO: Add handling for null / invalid API_KEY
+	# TODO: Add handling for invalid API_KEY
 
 	# Register (register API key)
 	if user_message.startswith(".register"):
-		api_key = user_message.split(".register")[1].strip()
+		api_key = user_message.split(" ")[1]
+
+		if api_key == "":
+			return
 
 		set_api_key(message.guild.id, api_key)
 
@@ -50,19 +53,21 @@ async def on_message(message):
 
 	# Courses (list courses)
 	if user_message.startswith(".courses"):
-		guild_id = message.guild.id
-		api_key = guild_keys[guild_id]
+		api_key = guild_keys[message.guild.id]
 		course_list = list_courses(api_key)
 
-		await message.channel.send("Course List: ")
+		await message.channel.send("**Course List:**")
 		for courses in course_list:
 			await message.channel.send(courses)
 
 	# Search (returns matching course name)
 	if user_message.startswith(".search"):
-		query = user_message.split(".search")[1]
-		guild_id = message.guild.id
-		api_key = guild_keys[guild_id]
+		query = user_message.split(" ")[1]
+
+		if query == "":
+			return
+
+		api_key = guild_keys[message.guild.id]
 
 		await message.channel.send(find_course(api_key,query).name)
 
