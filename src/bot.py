@@ -19,7 +19,8 @@ intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 intents.message_content = True
 
-token = os.environ['TOKEN']
+#token = os.environ['TOKEN']
+token = "OTcxMjM5NDM4ODkyMDE5NzQz.GgLFpU.RE-62RXNad4Hm1VjJzJxpECCWuyrvofyqHhmqA"
 
 
 @client.event
@@ -65,6 +66,7 @@ async def on_message(message):
             await message.channel.send(courses)
 
     # Search (returns matching course name)
+    # TODO: take entire string minus command name
     if user_message.lower().startswith(".search"):
         query = user_message.split(" ")[1]
         api_key = guild_keys[message.guild.id]
@@ -72,7 +74,11 @@ async def on_message(message):
         if query == "" or api_key == "":
             return
 
-        await message.channel.send(find_course(api_key, query).name)
+        courses = search_course(api_key, query)
+
+        await message.channel.send("Found (" + str(len(courses)) + ") courses containing: **" + query + "**")
+        for course in courses:
+            await message.channel.send(course)
 
     # Help (returns list of commands)
     if user_message.lower() == ".help":
