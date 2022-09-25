@@ -44,16 +44,17 @@ def list_courses(api_key):
     return courses
 
 
-def find_course(api_key, query):
+def search_course(api_key, query):
     """Returns first instance of course matching course_name
         Returns null if query is not found"""
 
     canvas = Canvas(API_URL, api_key)
     user = canvas.get_current_user()
-    course_query = None
+
+    courses = list()
 
     for course in user.get_courses():
         if query.lower() in str(course.name).lower():
-            course_query = course
+            courses.append(course)
 
-    return course_query
+    return courses
