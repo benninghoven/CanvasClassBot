@@ -5,14 +5,15 @@ from canvasapi import Canvas
 
 # Canvas API URL
 API_URL = "https://canvas.instructure.com/"
-# Canvas API key
-API_KEY = "349~NTHNMprd3AAqhwgIY8veN9PrZvH8VZ8TUaouLIpyYBDCHwdQ0VX1ebOaIC8RRYUt"
 
-# Initialize a new Canvas object
-canvas = Canvas(API_URL, API_KEY)
+# Format: 'guild_id': 'api_key'
+guild_keys = {
+    0: 0
+}
 
-# Initialize user
-user = canvas.get_current_user()
+
+def set_api_key(guild_id, api_key):
+    guild_keys.update({guild_id: api_key})
 
 
 def list_assignments(course):
@@ -27,10 +28,12 @@ def list_assignments(course):
     return assignments
 
 
-def list_courses():
+def list_courses(api_key):
     """Returns list of courses for current user
         Returns null if no courses found"""
 
+    canvas = Canvas(API_URL, api_key)
+    user = canvas.get_current_user()
     courses = list()
 
     for course in user.get_courses():
@@ -39,10 +42,12 @@ def list_courses():
     return courses
 
 
-def find_course(query):
+def find_course(api_key, query):
     """Returns first instance of course matching course_name
         Returns null if query is not found"""
 
+    canvas = Canvas(API_URL, api_key)
+    user = canvas.get_current_user()
     course_query = None
 
     for course in user.get_courses():
