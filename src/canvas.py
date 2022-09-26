@@ -17,6 +17,13 @@ def set_api_key(guild_id, api_key):
     guild_keys.update({guild_id: api_key})
 
 
+def test_key(api_key):
+    """Tests Canvas API key
+        Will throw InvalidAccessToken exception if invalid"""
+    canvas = Canvas(API_URL, api_key)
+    canvas.get_current_user()
+
+
 def list_assignments(course):
     """Returns list of public assignments for course
         Returns null if no assignments found"""
