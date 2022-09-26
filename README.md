@@ -20,4 +20,4 @@ This step is required for the bot to function.
 
 `.courses` This command is intended for use during setup to list all possible Canvas courses for the bot to pair with.
 
-`.search` This command is intended for use during setup to search for a Canvas course for the bot to pair with.
+`.search (query)` This command is intended for use during setup to search for a Canvas course for the bot to pair with.
