@@ -42,7 +42,8 @@ async def on_message(message):
 
     # Register (register API key)
     if user_message.lower().startswith(".register"):
-        api_key = user_message.split(" ")[1]
+        api_key = user_message
+        api_key = api_key[9::].strip()
 
         if api_key == "":
             return
@@ -65,9 +66,10 @@ async def on_message(message):
             await message.channel.send(courses)
 
     # Search (returns matching course name)
-    # TODO: take entire string minus command name
     if user_message.lower().startswith(".search"):
-        query = user_message.split(" ")[1]
+        query = user_message
+        query = query[7::].strip()
+
         api_key = guild_keys[message.guild.id]
 
         if query == "" or api_key == "":
@@ -75,7 +77,7 @@ async def on_message(message):
 
         courses = search_course(api_key, query)
 
-        await message.channel.send(f"Found ({len(courses)}) courses containing: **{query}**")
+        await message.channel.send(f"Found `{len(courses)}` courses containing: **{query}**")
         for course in courses:
             await message.channel.send(course)
 
