@@ -19,7 +19,8 @@ intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 intents.message_content = True
 
-token = os.environ['TOKEN']
+#token = os.environ['TOKEN']
+token = "MTAyMzE0MTMzNTA1NTczNjg0Mg.GfYAsD.V6JPMnj-TD007zybrInVZymEkdZwfP90NvOMjM"
 
 
 @client.event
@@ -75,7 +76,7 @@ async def on_message(message):
 
         courses = search_course(api_key, query)
 
-        await message.channel.send("Found (" + str(len(courses)) + ") courses containing: **" + query + "**")
+        await message.channel.send(f"Found ({len(courses)}) courses containing: **{query}**")
         for course in courses:
             await message.channel.send(course)
 
@@ -83,11 +84,11 @@ async def on_message(message):
     if user_message.lower() == ".help":
         await message.channel.send("**Commands**\n\n"
                                    "`.register (api_key)` This command registers your Canvas API key with the bot."
-                                   "This step is required for the bot to function.\n"
+                                   " This step is required for the bot to function.\n\n"
                                    "`.courses` This command is intended for use during setup to list all possible "
-                                   "Canvas courses for the bot to pair with.\n"
+                                   "Canvas courses for the bot to pair with.\n\n"
                                    "`.search (query)` This command is intended for use during setup to search for a "
-                                   "Canvas course for the bot to pair with.")
+                                   "Canvas course to pair the bot pair with.")
 
 
 client.run(token)
