@@ -29,7 +29,7 @@ async def on_ready():
 
     # Adds empty value for API key
     for guild in client.guilds:
-        set_api_key(guild.id, "0")
+        set_api_key(guild.id, "")
 
 
 @client.event
@@ -48,8 +48,14 @@ async def on_message(message):
         api_key = user_message
         api_key = api_key[9::].strip()
 
-        if api_key == "" or api_key == "0":
-            await message.channel.send("No API key found!")
+        if api_key == "":
+            await message.channel.send("No API key inputted, try again!")
+            return
+
+        try:
+            test_key(api_key)
+        except canvasapi.exceptions.InvalidAccessToken:
+            await message.channel.send("Invalid API key!")
             return
 
         set_api_key(message.guild.id, api_key)
@@ -60,7 +66,7 @@ async def on_message(message):
     if user_message.lower() == ".courses":
         api_key = guild_keys[message.guild.id]
 
-        if api_key == "" or api_key == "0":
+        if api_key == "":
             await message.channel.send("No API key found!")
             return
 
@@ -81,7 +87,7 @@ async def on_message(message):
 
         api_key = guild_keys[message.guild.id]
 
-        if api_key == "" or api_key == "0":
+        if api_key == "":
             await message.channel.send("No API key found!")
             return
 
