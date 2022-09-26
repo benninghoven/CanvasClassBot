@@ -21,10 +21,13 @@ intents.message_content = True
 
 token = os.environ['TOKEN']
 
-
 @client.event
 async def on_ready():
     print("{0.user}".format(client) + " bot is online.")
+
+    # Adds empty value for API key
+    for guild in client.guilds:
+        set_api_key(guild.id, "0")
 
 
 @client.event
@@ -45,7 +48,8 @@ async def on_message(message):
         api_key = user_message
         api_key = api_key[9::].strip()
 
-        if api_key == "":
+        if api_key == "" or api_key == "0":
+            await message.channel.send("No API key found!")
             return
 
         set_api_key(message.guild.id, api_key)
@@ -56,7 +60,8 @@ async def on_message(message):
     if user_message.lower() == ".courses":
         api_key = guild_keys[message.guild.id]
 
-        if api_key == "":
+        if api_key == "" or api_key == "0":
+            await message.channel.send("No API key found!")
             return
 
         course_list = list_courses(api_key)
@@ -72,7 +77,8 @@ async def on_message(message):
 
         api_key = guild_keys[message.guild.id]
 
-        if query == "" or api_key == "":
+        if api_key == "" or api_key == "0":
+            await message.channel.send("No API key found!")
             return
 
         courses = search_course(api_key, query)
