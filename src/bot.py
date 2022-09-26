@@ -1,3 +1,4 @@
+import canvasapi.exceptions
 import discord
 import os
 import random
@@ -5,6 +6,7 @@ from dotenv import load_dotenv
 from dotenv import dotenv_values
 from discord.ext import context
 from discord.ext import commands
+from canvasapi import exceptions
 from canvas import *
 
 # Libraries I installed:
@@ -41,8 +43,6 @@ async def on_message(message):
     if message.guild is None:
         return
 
-    # TODO: Add handling for invalid API_KEY
-
     # Register (register API key)
     if user_message.lower().startswith(".register"):
         api_key = user_message
@@ -64,7 +64,11 @@ async def on_message(message):
             await message.channel.send("No API key found!")
             return
 
-        course_list = list_courses(api_key)
+        try:
+            course_list = list_courses(api_key)
+        except canvasapi.exceptions.InvalidAccessToken:
+            await message.channel.send("Invalid API key!")
+            return
 
         await message.channel.send("**Course List:**")
         for courses in course_list:
@@ -81,7 +85,11 @@ async def on_message(message):
             await message.channel.send("No API key found!")
             return
 
-        courses = search_course(api_key, query)
+        try:
+            courses = search_course(api_key, query)
+        except canvasapi.exceptions.InvalidAccessToken:
+            await message.channel.send("Invalid API key!")
+            return
 
         await message.channel.send(f"Found `{len(courses)}` courses containing: **{query}**")
         for course in courses:
