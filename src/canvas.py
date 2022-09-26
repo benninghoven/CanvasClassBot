@@ -6,16 +6,6 @@ from canvasapi import Canvas
 # Canvas API URL
 API_URL = "https://canvas.instructure.com/"
 
-# Guild keys [guild_id][api_key]
-guild_keys = {
-    0: 0
-}
-
-
-def set_api_key(guild_id, api_key):
-    """Sets API key for guild"""
-    guild_keys.update({guild_id: api_key})
-
 
 def test_key(api_key):
     """Tests Canvas API key
