@@ -2,6 +2,7 @@ import canvasapi.exceptions
 import discord
 import os
 import random
+import sqlite3
 from dotenv import load_dotenv
 from dotenv import dotenv_values
 from discord.ext import context
@@ -31,6 +32,10 @@ async def on_ready():
     for guild in client.guilds:
         set_api_key(guild.id, "")
 
+    con = sqlite3.connect("bot.db")
+    cur = con.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS keys(guild_id int, api_key string)")
+
 
 @client.event
 async def on_message(message):
@@ -57,6 +62,12 @@ async def on_message(message):
         except canvasapi.exceptions.InvalidAccessToken:
             await message.channel.send("Invalid API key!")
             return
+
+        # Insert key into DB
+        con = sqlite3.connect("bot.db")
+        cur = con.cursor()
+        con.execute(f"REPLACE INTO keys (guild_id, api_key) VALUES (({message.guild.id}), (\"{api_key}\"))")
+        con.commit()
 
         set_api_key(message.guild.id, api_key)
 
