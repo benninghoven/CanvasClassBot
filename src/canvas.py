@@ -6,8 +6,7 @@ from canvasapi import Canvas
 # Canvas API URL
 API_URL = "https://canvas.instructure.com/"
 
-# Guild keys
-# Format: 'guild_id': 'api_key'
+# Guild keys [guild_id][api_key]
 guild_keys = {
     0: 0
 }
