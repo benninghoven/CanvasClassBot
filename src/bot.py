@@ -24,13 +24,20 @@ intents.message_content = True
 
 token = os.environ['TOKEN']
 
+
+def get_api_key(guild_id):
+    con = sqlite3.connect("bot.db")
+    cur = con.cursor()
+    cur.execute(f"SELECT api_key FROM keys WHERE guild_id = {guild_id}")
+    result = cur.fetchone()[0]
+    con.close()
+
+    return result
+
+
 @client.event
 async def on_ready():
     print("{0.user}".format(client) + " bot is online.")
-
-    # Adds empty value for API key
-    for guild in client.guilds:
-        set_api_key(guild.id, "")
 
     con = sqlite3.connect("bot.db")
     cur = con.cursor()
@@ -65,17 +72,14 @@ async def on_message(message):
 
         # Insert key into DB
         con = sqlite3.connect("bot.db")
-        cur = con.cursor()
         con.execute(f"REPLACE INTO keys (guild_id, api_key) VALUES (({message.guild.id}), (\"{api_key}\"))")
         con.commit()
-
-        set_api_key(message.guild.id, api_key)
 
         await message.channel.send("API key registered!")
 
     # Courses (list courses)
     if user_message.lower() == ".courses":
-        api_key = guild_keys[message.guild.id]
+        api_key = get_api_key(message.guild.id)
 
         if api_key == "":
             await message.channel.send("No API key found!")
@@ -96,7 +100,7 @@ async def on_message(message):
         query = user_message
         query = query[7::].strip()
 
-        api_key = guild_keys[message.guild.id]
+        api_key = get_api_key(message.guild.id)
 
         if api_key == "":
             await message.channel.send("No API key found!")
