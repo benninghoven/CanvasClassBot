@@ -21,31 +21,35 @@ intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 intents.message_content = True
 
-token = os.environ['TOKEN']
+# token = os.environ['TOKEN']
+token = "MTAyMzE0MTMzNTA1NTczNjg0Mg.GN70DH.BQ05u988e56GXd-Sk7c-lbYuW530AngbzNq_vA"
 
 
 def get_api_key(guild_id):
+
     con = sqlite3.connect("bot.db")
 
     try:
-        cur = con.cursor()
-        cur.execute(f"SELECT api_key FROM keys WHERE guild_id = {guild_id}")
-        result = cur.fetchone()[0]
-        con.close()
+        with con:
+            cur = con.cursor()
+            cur.execute(f"SELECT api_key FROM keys WHERE guild_id = {guild_id}")
 
-        return result
+        return cur.fetchone()[0]
     except (AttributeError, TypeError):
-        con.close()
         return "401"
+    finally:
+        con.close()
 
 
 @client.event
 async def on_ready():
-    print("{0.user}".format(client) + " bot is online.")
+    print(f"{client.user} bot is online")
 
     con = sqlite3.connect("bot.db")
-    cur = con.cursor()
-    cur.execute("CREATE TABLE IF NOT EXISTS keys(guild_id int, api_key string)")
+    with con:
+        cur = con.cursor()
+        cur.execute("CREATE TABLE IF NOT EXISTS keys(guild_id int, api_key string)")
+    con.close()
 
 
 @client.event
@@ -85,7 +89,7 @@ async def on_message(message):
     if user_message.lower() == ".courses":
         api_key = get_api_key(message.guild.id)
 
-        if api_key == "" or api_key == "401":
+        if api_key == "401":
             await message.channel.send("No API key found!")
             return
 
@@ -104,9 +108,13 @@ async def on_message(message):
         query = user_message
         query = query[7::].strip()
 
+        if query == "":
+            await message.channel.send("Invalid query, try again!")
+            return
+
         api_key = get_api_key(message.guild.id)
 
-        if api_key == "" or api_key == "401":
+        if api_key == "401":
             await message.channel.send("No API key found!")
             return
 
