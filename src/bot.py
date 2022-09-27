@@ -27,12 +27,17 @@ token = os.environ['TOKEN']
 
 def get_api_key(guild_id):
     con = sqlite3.connect("bot.db")
-    cur = con.cursor()
-    cur.execute(f"SELECT api_key FROM keys WHERE guild_id = {guild_id}")
-    result = cur.fetchone()[0]
-    con.close()
 
-    return result
+    try:
+        cur = con.cursor()
+        cur.execute(f"SELECT api_key FROM keys WHERE guild_id = {guild_id}")
+        result = cur.fetchone()[0]
+        con.close()
+
+        return result
+    except (AttributeError, TypeError):
+        con.close()
+        return "401"
 
 
 @client.event
@@ -81,7 +86,7 @@ async def on_message(message):
     if user_message.lower() == ".courses":
         api_key = get_api_key(message.guild.id)
 
-        if api_key == "":
+        if api_key == "" or api_key == "401":
             await message.channel.send("No API key found!")
             return
 
@@ -102,7 +107,7 @@ async def on_message(message):
 
         api_key = get_api_key(message.guild.id)
 
-        if api_key == "":
+        if api_key == "" or api_key == "401":
             await message.channel.send("No API key found!")
             return
 
