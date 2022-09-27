@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from dotenv import dotenv_values
 from discord.ext import context
 from discord.ext import commands
-from canvasapi import exceptions
 from canvas import *
 
 # Libraries I installed:
