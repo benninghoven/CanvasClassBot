@@ -21,11 +21,11 @@ intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 intents.message_content = True
 
-# token = os.environ['TOKEN']
-token = "MTAyMzE0MTMzNTA1NTczNjg0Mg.GN70DH.BQ05u988e56GXd-Sk7c-lbYuW530AngbzNq_vA"
+token = os.environ['TOKEN']
 
 
 def get_api_key(guild_id):
+    """Returns Canvas API key"""
 
     con = sqlite3.connect("bot.db")
 
