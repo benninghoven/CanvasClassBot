@@ -21,8 +21,7 @@ intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 intents.message_content = True
 
-# token = os.environ['TOKEN']
-token = "MTAyMzE0MTMzNTA1NTczNjg0Mg.GSHlg2.RmPUUycusTGI9l5orPYZX_lJ-62BXX1dYiOJkM"
+token = os.environ['TOKEN']
 
 
 def get_api_key(guild_id):
