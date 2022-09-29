@@ -42,6 +42,8 @@ def get_api_key(guild_id):
 
 
 def simple_embed(title_text):
+    """Returns Discord embed and sets title_text as embed title"""
+
     embed = discord.Embed(title=title_text, color=0x00000)
     embed.set_author(
         name=client.user.display_name, icon_url=client.user.avatar)
