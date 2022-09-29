@@ -48,7 +48,7 @@ def simple_embed(title_text):
     embed.set_author(
         name=client.user.display_name, icon_url=client.user.avatar)
     embed.set_footer(
-        text="Use .help for the complete commands list!")
+        text="Use .help for the complete commands list")
 
     return embed
 
@@ -122,6 +122,10 @@ async def on_message(message):
             cur.execute(f"SELECT class_name FROM keys WHERE guild_id = {message.guild.id}")
             course_name = cur.fetchone()[0]
         con.close()
+
+        if course_name is None:
+            await message.channel.send(embed=simple_embed("No course set for guild!"))
+            return
 
         course = search_course(api_key, course_name)[0]
         assignments = list_assignments(course)
@@ -208,7 +212,7 @@ async def on_message(message):
             return
 
         courses = search_course(api_key, query)
-        await message.channel.send(f"Found `{len(courses)}` courses containing: **{query}**")
+        await message.channel.send(embed=simple_embed(f"Found `{len(courses)}` courses containing: **{query}**"))
         for course in courses:
             await message.channel.send(course)
 
