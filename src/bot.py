@@ -21,7 +21,8 @@ intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 intents.message_content = True
 
-token = os.environ['TOKEN']
+# token = os.environ['TOKEN']
+token = "MTAyMzE0MTMzNTA1NTczNjg0Mg.GSHlg2.RmPUUycusTGI9l5orPYZX_lJ-62BXX1dYiOJkM"
 
 
 def get_api_key(guild_id):
@@ -80,10 +81,10 @@ async def on_message(message):
         api_key = user_message
         api_key = api_key[9::].strip()
 
+        # Validates API key
         if api_key == "":
             await message.channel.send(embed=simple_embed("No API key inputted, try again!"))
             return
-
         try:
             test_key(api_key)
         except canvasapi.exceptions.InvalidAccessToken:
@@ -105,10 +106,10 @@ async def on_message(message):
     if user_message.lower() == ".assignments":
         api_key = get_api_key(message.guild.id)
 
+        # Validates API key
         if api_key == "401":
             await message.channel.send(embed=simple_embed("No API key found!"))
             return
-
         try:
             test_key(api_key)
         except canvasapi.exceptions.InvalidAccessToken:
@@ -140,10 +141,10 @@ async def on_message(message):
     if user_message.lower() == ".courses":
         api_key = get_api_key(message.guild.id)
 
+        # Validates API key
         if api_key == "401":
             await message.channel.send(embed=simple_embed("No API key found!"))
             return
-
         try:
             test_key(api_key)
         except canvasapi.exceptions.InvalidAccessToken:
@@ -162,10 +163,10 @@ async def on_message(message):
 
         api_key = get_api_key(message.guild.id)
 
+        # Validates API key
         if api_key == "401":
             await message.channel.send(embed=simple_embed("No API key found!"))
             return
-
         try:
             test_key(api_key)
         except canvasapi.exceptions.InvalidAccessToken:
@@ -201,10 +202,10 @@ async def on_message(message):
 
         api_key = get_api_key(message.guild.id)
 
+        # Validates API key
         if api_key == "401":
             await message.channel.send(embed=simple_embed("No API key found!"))
             return
-
         try:
             test_key(api_key)
         except canvasapi.exceptions.InvalidAccessToken:
