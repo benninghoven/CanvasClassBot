@@ -4,13 +4,13 @@ from canvasapi import Canvas
 # pip install canvasapi
 
 # Canvas API URL
-API_URL = "https://canvas.instructure.com/"
+_API_URL = "https://canvas.instructure.com/"
 
 
 def test_key(api_key):
     """Tests Canvas API key
         Will throw InvalidAccessToken exception if invalid"""
-    canvas = Canvas(API_URL, api_key)
+    canvas = Canvas(_API_URL, api_key)
     canvas.get_current_user()
 
 
@@ -30,7 +30,7 @@ def list_courses(api_key):
     """Returns list of courses for current user
         Returns null if no courses found"""
 
-    canvas = Canvas(API_URL, api_key)
+    canvas = Canvas(_API_URL, api_key)
     user = canvas.get_current_user()
     courses = list()
 
@@ -44,7 +44,7 @@ def search_course(api_key, query):
     """Returns first instance of course matching course_name
         Returns null if query is not found"""
 
-    canvas = Canvas(API_URL, api_key)
+    canvas = Canvas(_API_URL, api_key)
     user = canvas.get_current_user()
 
     courses = list()
