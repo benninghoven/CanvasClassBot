@@ -172,6 +172,10 @@ async def on_message(message):
             await message.channel.send(embed=simple_embed("Invalid API key!"))
             return
 
+        if query == "":
+            await message.channel.send(embed=simple_embed("Invalid query, try again!"))
+            return
+
         courses = search_course(api_key, query)
         if len(courses) == 0:
             await message.channel.send(embed=simple_embed(f"No courses found for: **{query}**"))
