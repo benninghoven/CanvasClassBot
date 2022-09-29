@@ -183,8 +183,8 @@ async def on_message(message):
                         f"INTO keys (guild_id, api_key, class_name) "
                         f"VALUES (({message.guild.id}), (\"{api_key}\"), (\"{course}\"))")
         con.close()
-        for course in courses:
-            await message.channel.send(course)
+
+        await message.channel.send(embed=simple_embed(f"Course set as {course}"))
 
     # Search (returns matching course name)
     if user_message.lower().startswith(".search"):
