@@ -151,9 +151,18 @@ async def on_message(message):
             return
 
         course_list = list_courses(api_key)
-        await message.channel.send("**Course List:**")
+        course_message = ""
         for courses in course_list:
-            await message.channel.send(courses)
+            course_message += courses + "\n\n"
+
+        embed = discord.Embed(title="Course List", color=0x00000)
+        embed.set_author(
+            name=client.user.display_name, icon_url=client.user.avatar)
+        embed.description = course_message
+        embed.set_footer(
+            text="Use .help for the complete commands list")
+
+        await message.channel.send(embed=embed)
 
     # Set course
     if user_message.lower().startswith(".setcourse"):
@@ -216,9 +225,18 @@ async def on_message(message):
             return
 
         courses = search_course(api_key, query)
-        await message.channel.send(embed=simple_embed(f"Found `{len(courses)}` courses containing: **{query}**"))
+        search_results = ""
         for course in courses:
-            await message.channel.send(course)
+            search_results += course.name + "\n\n"
+
+        embed = discord.Embed(title=f"Found `{len(courses)}` courses containing: **{query}**", color=0x00000)
+        embed.set_author(
+            name=client.user.display_name, icon_url=client.user.avatar)
+        embed.description = search_results
+        embed.set_footer(
+            text="Use .help for the complete commands list")
+
+        await message.channel.send(embed=embed)
 
     # Help (returns list of commands)
     if user_message.lower() == ".help":
