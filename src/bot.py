@@ -231,7 +231,7 @@ async def on_message(message):
                              f"`.search (query)` Intended for use during setup to search for a "
                              "Canvas course to pair the bot pair with.\n\n"
                              f"`.setcourse (course_name)` This command pairs {client.user.display_name} with your "
-                             f"Canvas class"
+                             f"Canvas class\n\n"
                              f"`.assignments` Lists all assignments for paired course")
 
         await message.channel.send(embed=embed)
