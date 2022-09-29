@@ -224,12 +224,15 @@ async def on_message(message):
     if user_message.lower() == ".help":
         embed = discord.Embed(title="Commands List", color=0x00000)
         embed.set_author(name=client.user.display_name, icon_url=client.user.avatar)
-        embed.description = ("`.register (api_key)` This command registers your Canvas API key with the bot."
-                             " This step is required for the bot to function.\n\n"
-                             "`.courses` This command is intended for use during setup to list all possible "
-                             "Canvas courses for the bot to pair with.\n\n"
-                             "`.search (query)` This command is intended for use during setup to search for a "
-                             "Canvas course to pair the bot pair with.")
+        embed.description = (f"`.register (api_key)` Registers your Canvas API key with the bot."
+                             f" This step is required for the bot to function.\n\n"
+                             f"`.courses` Intended for use during setup to list all possible "
+                             f"Canvas courses for the bot to pair with.\n\n"
+                             f"`.search (query)` Intended for use during setup to search for a "
+                             "Canvas course to pair the bot pair with.\n\n"
+                             f"`.setcourse (course_name)` This command pairs {client.user.display_name} with your "
+                             f"Canvas class"
+                             f"`.assignments` Lists all assignments for paired course")
 
         await message.channel.send(embed=embed)
 
