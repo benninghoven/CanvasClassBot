@@ -161,11 +161,12 @@ async def on_message(message):
             return
 
         try:
-            courses = search_course(api_key, query)
+            test_key(api_key)
         except canvasapi.exceptions.InvalidAccessToken:
             await message.channel.send(embed=simple_embed("Invalid API key!"))
             return
 
+        courses = search_course(api_key, query)
         if len(courses) == 0:
             await message.channel.send(embed=simple_embed(f"No courses found for: **{query}**"))
             return
@@ -195,7 +196,7 @@ async def on_message(message):
             return
 
         try:
-            courses = search_course(api_key, query)
+            test_key(api_key)
         except canvasapi.exceptions.InvalidAccessToken:
             await message.channel.send(embed=simple_embed("Invalid API key!"))
             return
@@ -204,6 +205,7 @@ async def on_message(message):
             await message.channel.send(embed=simple_embed("Invalid query, try again!"))
             return
 
+        courses = search_course(api_key, query)
         await message.channel.send(f"Found `{len(courses)}` courses containing: **{query}**")
         for course in courses:
             await message.channel.send(course)
@@ -211,8 +213,7 @@ async def on_message(message):
     # Help (returns list of commands)
     if user_message.lower() == ".help":
         embed = discord.Embed(title="Commands List", color=0x00000)
-        embed.set_author(
-            name=client.user.display_name, icon_url=client.user.avatar)
+        embed.set_author(name=client.user.display_name, icon_url=client.user.avatar)
         embed.description = ("`.register (api_key)` This command registers your Canvas API key with the bot."
                              " This step is required for the bot to function.\n\n"
                              "`.courses` This command is intended for use during setup to list all possible "
