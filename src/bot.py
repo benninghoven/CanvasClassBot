@@ -21,7 +21,8 @@ intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 intents.message_content = True
 
-token = os.environ['TOKEN']
+# token = os.environ['TOKEN']
+token = "MTAyMzE0MTMzNTA1NTczNjg0Mg.GsrHq2.s5TwfnJ6NexkYUMs-KFtBIIXfDEa9omNrXYCKg"
 
 
 def get_api_key(guild_id):
@@ -172,7 +173,7 @@ async def on_message(message):
             await message.channel.send(embed=simple_embed("Invalid API key!"))
             return
 
-        if query == "":
+        if query == "" or query is None:
             await message.channel.send(embed=simple_embed("Invalid query, try again!"))
             return
 
