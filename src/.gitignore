@@ -1,4 +1,5 @@
 *
 !.gitignore
-!token.txt
-!.env
+!bot.py
+!canvas.py
+!main.py
