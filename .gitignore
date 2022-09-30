@@ -1,0 +1,6 @@
+*
+!.gitignore
+!src/
+!README.md
+!requirements.txt
+!tests/
