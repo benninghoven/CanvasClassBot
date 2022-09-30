@@ -75,184 +75,203 @@ async def on_message(message):
     if message.guild is None:
         return
 
-    # Register (register API key)
     if user_message.lower().startswith(".register"):
-        api_key = user_message
-        api_key = api_key[9::].strip()
+        api_key = user_message[9::].strip()
+        await _register(message, api_key)
+    elif user_message.lower().startswith(".setcourse"):
+        query = user_message[10::].strip()
+        await _set_course(message, query)
+    elif user_message.lower().startswith(".search"):
+        query = user_message[7::].strip()
+        await _search(message, query)
+    elif user_message.lower() == ".assignments":
+        await _assignments(message)
+    elif user_message.lower() == ".courses":
+        await _courses(message)
+    elif user_message.lower() == ".help":
+        await _help(message)
 
-        # Validates API key
-        if api_key == "":
-            await message.channel.send(embed=simple_embed("No API key inputted, try again!"))
-            return
-        try:
-            test_key(api_key)
-        except canvasapi.exceptions.InvalidAccessToken:
-            await message.channel.send(embed=simple_embed("Invalid API key!"))
-            return
 
-        # Insert key into DB
-        con = sqlite3.connect("bot.db")
-        with con:
-            cur = con.cursor()
-            cur.execute(f"REPLACE "
-                        f"INTO keys (guild_id, api_key) "
-                        f"VALUES (({message.guild.id}), (\"{api_key}\"))")
+async def _register(message, key):
+    """Register (register API key)"""
 
-        con.close()
-        await message.channel.send(embed=simple_embed("API key registered!"))
+    # Validates API key
+    if key == "":
+        await message.channel.send(embed=simple_embed("No API key inputted, try again!"))
+        return
+    try:
+        test_key(key)
+    except canvasapi.exceptions.InvalidAccessToken:
+        await message.channel.send(embed=simple_embed("Invalid API key!"))
+        return
 
-    # List assignments
-    if user_message.lower() == ".assignments":
-        api_key = get_api_key(message.guild.id)
+    # Insert key into DB
+    con = sqlite3.connect("bot.db")
+    with con:
+        cur = con.cursor()
+        cur.execute(f"REPLACE "
+                    f"INTO keys (guild_id, api_key) "
+                    f"VALUES (({message.guild.id}), (\"{key}\"))")
 
-        # Validates API key
-        if api_key == "401":
-            await message.channel.send(embed=simple_embed("No API key found!"))
-            return
-        try:
-            test_key(api_key)
-        except canvasapi.exceptions.InvalidAccessToken:
-            await message.channel.send(embed=simple_embed("Invalid API key!"))
-            return
+    con.close()
+    await message.channel.send(embed=simple_embed("API key registered!"))
 
-        # Get course from DB
-        con = sqlite3.connect("bot.db")
-        with con:
-            cur = con.cursor()
-            cur.execute(f"SELECT class_name FROM keys WHERE guild_id = {message.guild.id}")
-            course_name = cur.fetchone()[0]
-        con.close()
 
-        if course_name is None:
-            await message.channel.send(embed=simple_embed("No course set for guild!"))
-            return
+async def _set_course(message, query):
+    """Set Guild-Canvas course"""
 
-        course = search_course(api_key, course_name)[0]
-        assignments = list_assignments(course)
+    api_key = get_api_key(message.guild.id)
 
-        assignment_message = "**Assignments**\n"
-        for assignment in assignments:
-            assignment_message += (assignment + "\n\n")
+    # Validates API key
+    if api_key == "401":
+        await message.channel.send(embed=simple_embed("No API key found!"))
+        return
+    try:
+        test_key(api_key)
+    except canvasapi.exceptions.InvalidAccessToken:
+        await message.channel.send(embed=simple_embed("Invalid API key!"))
+        return
 
-        await message.channel.send(assignment_message)
+    if query == "" or query is None:
+        await message.channel.send(embed=simple_embed("Invalid query, try again!"))
+        return
 
-    # Courses (list courses)
-    if user_message.lower() == ".courses":
-        api_key = get_api_key(message.guild.id)
-
-        # Validates API key
-        if api_key == "401":
-            await message.channel.send(embed=simple_embed("No API key found!"))
-            return
-        try:
-            test_key(api_key)
-        except canvasapi.exceptions.InvalidAccessToken:
-            await message.channel.send(embed=simple_embed("Invalid API key!"))
-            return
-
-        course_list = list_courses(api_key)
-        course_message = ""
-        for courses in course_list:
-            course_message += courses + "\n\n"
-
-        embed = discord.Embed(title="Course List", color=0x00000)
-        embed.set_author(
-            name=client.user.display_name, icon_url=client.user.avatar)
-        embed.description = course_message
-        embed.set_footer(
-            text="Use .help for the complete commands list")
-
-        await message.channel.send(embed=embed)
+    courses = search_course(api_key, query)
+    if len(courses) == 0:
+        await message.channel.send(embed=simple_embed(f"No courses found for: **{query}**"))
+        return
 
     # Set course
-    if user_message.lower().startswith(".setcourse"):
-        query = user_message
-        query = query[10::].strip()
+    course = courses[0].name
 
-        api_key = get_api_key(message.guild.id)
+    con = sqlite3.connect("bot.db")
+    with con:
+        cur = con.cursor()
+        cur.execute(f"REPLACE "
+                    f"INTO keys (guild_id, api_key, class_name) "
+                    f"VALUES (({message.guild.id}), (\"{api_key}\"), (\"{course}\"))")
+    con.close()
 
-        # Validates API key
-        if api_key == "401":
-            await message.channel.send(embed=simple_embed("No API key found!"))
-            return
-        try:
-            test_key(api_key)
-        except canvasapi.exceptions.InvalidAccessToken:
-            await message.channel.send(embed=simple_embed("Invalid API key!"))
-            return
+    await message.channel.send(embed=simple_embed(f"Course set as {course}"))
 
-        if query == "" or query is None:
-            await message.channel.send(embed=simple_embed("Invalid query, try again!"))
-            return
 
-        courses = search_course(api_key, query)
-        if len(courses) == 0:
-            await message.channel.send(embed=simple_embed(f"No courses found for: **{query}**"))
-            return
+async def _search(message, query):
+    """Search (returns matching course name)"""
 
-        # Set course
-        course = courses[0].name
+    api_key = get_api_key(message.guild.id)
 
-        con = sqlite3.connect("bot.db")
-        with con:
-            cur = con.cursor()
-            cur.execute(f"REPLACE "
-                        f"INTO keys (guild_id, api_key, class_name) "
-                        f"VALUES (({message.guild.id}), (\"{api_key}\"), (\"{course}\"))")
-        con.close()
+    # Validates API key
+    if api_key == "401":
+        await message.channel.send(embed=simple_embed("No API key found!"))
+        return
+    try:
+        test_key(api_key)
+    except canvasapi.exceptions.InvalidAccessToken:
+        await message.channel.send(embed=simple_embed("Invalid API key!"))
+        return
 
-        await message.channel.send(embed=simple_embed(f"Course set as {course}"))
+    if query == "":
+        await message.channel.send(embed=simple_embed("Invalid query, try again!"))
+        return
 
-    # Search (returns matching course name)
-    if user_message.lower().startswith(".search"):
-        query = user_message
-        query = query[7::].strip()
+    courses = search_course(api_key, query)
+    search_results = ""
+    for course in courses:
+        search_results += course.name + "\n\n"
 
-        api_key = get_api_key(message.guild.id)
+    embed = discord.Embed(title=f"Found `{len(courses)}` courses containing: **{query}**", color=0x00000)
+    embed.set_author(
+        name=client.user.display_name, icon_url=client.user.avatar)
+    embed.description = search_results
+    embed.set_footer(
+        text="Use .help for the complete commands list")
 
-        # Validates API key
-        if api_key == "401":
-            await message.channel.send(embed=simple_embed("No API key found!"))
-            return
-        try:
-            test_key(api_key)
-        except canvasapi.exceptions.InvalidAccessToken:
-            await message.channel.send(embed=simple_embed("Invalid API key!"))
-            return
+    await message.channel.send(embed=embed)
 
-        if query == "":
-            await message.channel.send(embed=simple_embed("Invalid query, try again!"))
-            return
 
-        courses = search_course(api_key, query)
-        search_results = ""
-        for course in courses:
-            search_results += course.name + "\n\n"
+async def _help(message):
+    """Returns list of commands"""
 
-        embed = discord.Embed(title=f"Found `{len(courses)}` courses containing: **{query}**", color=0x00000)
-        embed.set_author(
-            name=client.user.display_name, icon_url=client.user.avatar)
-        embed.description = search_results
-        embed.set_footer(
-            text="Use .help for the complete commands list")
+    embed = discord.Embed(title="Commands List", color=0x00000)
+    embed.set_author(name=client.user.display_name, icon_url=client.user.avatar)
+    embed.description = (f"`.register (api_key)` Registers your Canvas API key with the bot."
+                         f" This step is required for the bot to function.\n\n"
+                         f"`.courses` Intended for use during setup to list all possible "
+                         f"Canvas courses for the bot to pair with.\n\n"
+                         f"`.search (query)` Intended for use during setup to search for a "
+                         "Canvas course to pair the bot pair with.\n\n"
+                         f"`.setcourse (course_name)` This command pairs {client.user.display_name} with your "
+                         f"Canvas class\n\n"
+                         f"`.assignments` Lists all assignments for paired course")
 
-        await message.channel.send(embed=embed)
+    await message.channel.send(embed=embed)
 
-    # Help (returns list of commands)
-    if user_message.lower() == ".help":
-        embed = discord.Embed(title="Commands List", color=0x00000)
-        embed.set_author(name=client.user.display_name, icon_url=client.user.avatar)
-        embed.description = (f"`.register (api_key)` Registers your Canvas API key with the bot."
-                             f" This step is required for the bot to function.\n\n"
-                             f"`.courses` Intended for use during setup to list all possible "
-                             f"Canvas courses for the bot to pair with.\n\n"
-                             f"`.search (query)` Intended for use during setup to search for a "
-                             "Canvas course to pair the bot pair with.\n\n"
-                             f"`.setcourse (course_name)` This command pairs {client.user.display_name} with your "
-                             f"Canvas class\n\n"
-                             f"`.assignments` Lists all assignments for paired course")
 
-        await message.channel.send(embed=embed)
+async def _assignments(message):
+    """List assignments"""
+
+    api_key = get_api_key(message.guild.id)
+
+    # Validates API key
+    if api_key == "401":
+        await message.channel.send(embed=simple_embed("No API key found!"))
+        return
+    try:
+        test_key(api_key)
+    except canvasapi.exceptions.InvalidAccessToken:
+        await message.channel.send(embed=simple_embed("Invalid API key!"))
+        return
+
+    # Get course from DB
+    con = sqlite3.connect("bot.db")
+    with con:
+        cur = con.cursor()
+        cur.execute(f"SELECT class_name FROM keys WHERE guild_id = {message.guild.id}")
+        course_name = cur.fetchone()[0]
+    con.close()
+
+    if course_name is None:
+        await message.channel.send(embed=simple_embed("No course set for guild!"))
+        return
+
+    course = search_course(api_key, course_name)[0]
+    assignments = list_assignments(course)
+
+    assignment_message = "**Assignments**\n"
+    for assignment in assignments:
+        assignment_message += (assignment + "\n\n")
+
+    await message.channel.send(assignment_message)
+
+
+async def _courses(message):
+    """Lists all enrolled Canvas classes with guild API key"""
+
+    api_key = get_api_key(message.guild.id)
+
+    # Validates API key
+    if api_key == "401":
+        await message.channel.send(embed=simple_embed("No API key found!"))
+        return
+    try:
+        test_key(api_key)
+    except canvasapi.exceptions.InvalidAccessToken:
+        await message.channel.send(embed=simple_embed("Invalid API key!"))
+        return
+
+    course_list = list_courses(api_key)
+    course_message = ""
+    for courses in course_list:
+        course_message += courses + "\n\n"
+
+    embed = discord.Embed(title="Course List", color=0x00000)
+    embed.set_author(
+        name=client.user.display_name, icon_url=client.user.avatar)
+    embed.description = course_message
+    embed.set_footer(
+        text="Use .help for the complete commands list")
+
+    await message.channel.send(embed=embed)
 
 
 client.run(token)
