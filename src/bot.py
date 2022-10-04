@@ -15,11 +15,11 @@ from canvas import *
 # pip install discord.ext.context <- haven't used this library
 
 load_dotenv()
-
-intents = discord.Intents.default()
-
+intents = discord.Intents().all() # DJB changed default to all
 client = discord.Client(intents=intents)
-intents.message_content = True
+
+#intents.message_content = True
+#intents.members = True # DJB Added for guild.owner to work
 
 token = os.environ['TOKEN']
 
@@ -274,4 +274,5 @@ async def _courses(message):
     await message.channel.send(embed=embed)
 
 
-client.run(token)
+if __name__ == "__main__":
+    client.run(token)
